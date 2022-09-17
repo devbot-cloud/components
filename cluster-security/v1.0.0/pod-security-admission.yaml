@@ -1,0 +1,37 @@
+#------------------------------------------------
+# The following labels are used to enforce the restricted-noroot policy
+# This is a pod security admission policy that is enforced by the pod-security-admission component
+# This is in replacement of pod-security-policy
+#------------------------------------------------
+apiVersion: apiserver.config.k8s.io/v1
+kind: AdmissionConfiguration
+plugins:
+- name: PodSecurity
+  configuration:
+    apiVersion: pod-security.admission.config.k8s.io/v1beta1 # v1beta1 is only available in Kubernetes v1.23+
+    kind: PodSecurityConfiguration
+    # ----------------------------------------------------------------------
+    # The following default labels are used to enforce the restricted policy
+    # With the version set as latest this will ensure that when kubernetes is updated to a new version
+    # the latest version of the policy will be used
+    # ----------------------------------------------------------------------
+    # Enforce restricted Clusterwide as the default
+    defaults:
+      enforce: "restricted"
+      enforce-version: "v1.25"   # Enforce the restricted policy version on kubernetes v1.25
+      warn: "restricted"
+      warn-version: "latest"     # Warn the restricted policy version on the latest kubernetes version
+      audit: "restricted"
+      audit-version: "v1.25"     # Audit the restricted policy version on kubernetes v1.25
+    # ----------------------------------------------------------------------
+    # The following are exceptions to the restricted policy
+    # This will ensure that kube-system is not restricted
+    # ----------------------------------------------------------------------
+    exemptions:
+      # Array of authenticated usernames to exempt.
+      usernames: []
+      # Array of runtime class names to exempt.
+      # runtimeClasses: ["kata-cloud-hypervisor"] <--- In the future this will be used to exempt kata containers
+      runtimeClasses: []
+      # Array of namespaces to exempt.
+      namespaces: ["kube-system"] # <--- This is the only exemption to the restricted policy
