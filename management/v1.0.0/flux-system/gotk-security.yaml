@@ -34,7 +34,6 @@ spec:
   interval: 1m0s
   path: ./cluster-security/v1.0.0/ # <--- Change this to the path to the security component
   prune: true
-  wait: true
   sourceRef:
     kind: GitRepository
     name: cluster-securtiy-component-git
