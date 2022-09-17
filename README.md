@@ -1,5 +1,5 @@
 # lootbot.cloud cluster components
-This repository contains the source code for the components that make up the lootbot.cloud cluster.
+This repository contains the source code for the cluster-security and cluster-management components.
 
 ## Components
 - [cluster-security](cluster-security/README.md): The cluster security component is responsible for managing the cluster's PodSecurityPolicy and PodSecurtiyAdmissionController resources.
