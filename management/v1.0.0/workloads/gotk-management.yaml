@@ -25,7 +25,7 @@ spec:
     !/${CLUSTER_NAME}/workloads
 ---
 #------------------------------------------------
-# This kustomize is responcible for deploying the management clusters workloads
+# This kustomize is responsible for deploying the management clusters workloads
 # This kustomize will recurse through the workloads directory of the management cluster
 # It will reconcile the /workloads folder of the management cluster
 # Creating the namespaces and kustomizations for the management cluster
