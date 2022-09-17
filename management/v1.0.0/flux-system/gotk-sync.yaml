@@ -1,0 +1,70 @@
+#------------------------------------------------
+# Flux sync configuration
+# the git repository points to itself 
+# This component will allow fluxcd to reconcile itself
+#------------------------------------------------
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: flux-system-component-git
+  namespace: flux-system
+spec:
+  gitImplementation: go-git
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  timeout: 60s
+  url: ssh://git@github.com/devbot-cloud/components.git # <--- Change this to the repo your currently in
+  ignore: |
+    # Exclude Everything
+    /*
+    # include management component
+    !/management/
+---
+#------------------------------------------------
+# This kustomization will alow flux to reconcile itself 
+# Changing the path in the following kustomization will allow for upgrading of the management components
+#------------------------------------------------
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: flux-system-component
+  namespace: flux-system
+spec:
+  sourceRef:
+    kind: GitRepository
+    name: flux-system-component-git
+    namespace: flux-system
+  path: ./management/v1.0.0/flux-system # <--- Change this to the path to the flux-system component
+  # --- 
+  # Disable pruning to prevent flux from deleting itself?
+  prune: false 
+  # ---
+  interval: 1m0s
+  validation: server
+  timeout: 5m
+  healthChecks: # <--- Perform health checks on all flux-system components
+  # Source Controller
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: source-controller
+    namespace: flux-system
+  # Kustomize Controller
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: kustomize-controller
+    namespace: flux-system
+  # Helm Controller
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: helm-controller
+    namespace: flux-system 
+  # ---
+  # Post build
+  # ---
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-env

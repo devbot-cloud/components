@@ -1,0 +1,58 @@
+#------------------------------------------------
+# This is the kustomize for the management workloads component
+# The workloads component contain the flux kustomizations 
+# For the Bootstraping of the management cluster
+#------------------------------------------------
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: cluster-workload-component-git
+  namespace: flux-system
+spec:
+  gitImplementation: go-git
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  timeout: 60s
+  url: ssh://git@github.com/devbot-cloud/components.git # <--- Change this to the repo your currently in
+  ignore: |
+    # Exclude Everything
+    /*
+    # include management component
+    !/management/
+---
+#------------------------------------------------
+# This is the kustomize for the cluster-workload-component
+# This will reconcile the management cluster workloads
+#------------------------------------------------
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: cluster-workload-component
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: flux-system-component  # <--- Wait for the core Flux-system to be deployed
+      namespace: flux-system
+    - name: cluster-security-component # <--- Wait for the security component to be deployed
+      namespace: flux-system
+  interval: 1m0s
+  path: ./management/v1.0.0/workloads # <--- Change this to the path to the workloads component
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: cluster-workload-component-git
+    namespace: flux-system
+  validation: server
+  timeout: 5m
+  # ---
+  # Post build
+  # Pull the Replacements from the ConfigMap cluster-env
+  # This contains the SSH Path and Cluster Name
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-env
+  # ---
