@@ -58,7 +58,7 @@ spec:
   # Pull the Replacements from the ConfigMap cluster-env
   postBuild:
     substituteFrom:
-      - kind: ConfigMap
-        name: workload-versions  # Require the workload-versions ConfigMap to be created
+      # - kind: ConfigMap
+      #   name: workload-versions  # Require the workload-versions ConfigMap to be created
       - kind: ConfigMap
         name: cluster-env # Require the cluster-env ConfigMap to be created
