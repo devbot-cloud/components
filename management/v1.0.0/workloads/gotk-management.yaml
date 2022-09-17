@@ -8,7 +8,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta1
 kind: GitRepository
 metadata:
   name: ${CLUSTER_NAME}-workloads-git
-  namespace: ${CLUSTER_NAME}
+  namespace: flux-system
 spec:
   gitImplementation: go-git
   interval: 1m0s
@@ -50,7 +50,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: ${CLUSTER_NAME}-workloads-git
-    namespace: ${CLUSTER_NAME}
+    namespace: flux-system
   validation: server
   timeout: 5m
   # ---
