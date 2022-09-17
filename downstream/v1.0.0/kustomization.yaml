@@ -1,0 +1,7 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Append all resources with the component name and version
+commonLabels:
+  lootbot.cloud/ComponentName: "downstream"
+  lootbot.cloud/ComponentVersion: "v1.0.0"

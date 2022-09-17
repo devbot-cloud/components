@@ -1,11 +1,35 @@
 #------------------------------------------------
+# Pull the source for the cluster-provisioning component 
+# Store it in the flux-system namespace for all clusters
+#------------------------------------------------
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: cluster-provisioning-component-git
+  namespace: flux-system
+spec:
+  gitImplementation: go-git
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  timeout: 60s
+  url: ssh://git@github.com/devbot-cloud/components.git
+  ignore: |
+    # Exclude Everything
+    /*
+    # include downstream component
+    !/downstream/
+---
+#------------------------------------------------
 # Flux will use this kustomize to deploy the workload clusters
 # Flux will create a kustomization for each of the downstream clusters
 #------------------------------------------------
 apiVersion: source.toolkit.fluxcd.io/v1beta1
 kind: GitRepository
 metadata:
-  name: cluster-provisioning-component-git
+  name: cluster-provisioning-source-git
   namespace: ${CLUSTER_NAME}
 spec:
   gitImplementation: go-git
@@ -61,7 +85,7 @@ spec:
   wait: true # As we do not know what we are installing we need to wait for the resources to be ready
   sourceRef:
     kind: GitRepository
-    name: cluster-provisioning-component-git
+    name: cluster-provisioning-source-git
     namespace: ${CLUSTER_NAME}
   validation: server
   timeout: 5m

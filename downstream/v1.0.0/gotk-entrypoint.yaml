@@ -1,0 +1,57 @@
+# --------------------------
+# This Will be applied as a resource directly from the cluster-build-component
+# creating the downstream clusters namespace.
+# creating a kustomization resource in the ds-clusters namespace
+# separating the clusters. 
+# --------------------------
+
+# -------
+# Create the namespace for the downstream cluster
+# This is where the helmrelease for the cluster will be applied
+# This is where the workloads for the downstream cluster will be applied
+# -------
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
+  name: ${CLUSTER_NAME}
+---
+# -------
+# Create the kustomization resource for the downstream cluster
+# allowing the component to reconcile itself and apply the resources per ds cluster.
+# -------
+#NOTE: this is assuming the source for this component is stored in the flux-system namespace
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: ${CLUSTER_NAME}-build-component
+  namespace: ${CLUSTER_NAME}
+spec:
+  dependsOn:
+  # Build Component Depends on the availability of Rancher and external secrets
+    - name: flux-system-component  # <--- Wait for the core Flux-system to be deployed
+      namespace: flux-system
+    - name: cluster-security-component # <--- Wait for the security component to be deployed
+      namespace: flux-system
+  interval: 1m0s
+  path: ./components/downstream/v1.0.0
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: cluster-provisioning-component-git
+    namespace: flux-system
+  validation: client
+  timeout: 1m0s
+  timeoutSeconds: 30
+  # ---
+  # Post build
+  # Pull the Replacements from the ConfigMap cluster-env
+  # This contains the SSH Path and Cluster Name
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-env
