@@ -46,7 +46,7 @@ spec:
   interval: 1m0s
   path: ./${CLUSTER_NAME}/workloads/
   prune: true 
-  wait: true # As we do not know what we are installing we need to wait for the resources to be ready
+  # wait: true # As we do not know what we are installing we need to wait for the resources to be ready
   sourceRef:
     kind: GitRepository
     name: ${CLUSTER_NAME}-workloads-git

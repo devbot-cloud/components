@@ -82,7 +82,7 @@ spec:
   interval: 1m0s
   path: ./*/build/ # <--- Change this to the path of all the cluster folders
   prune: true 
-  wait: true # As we do not know what we are installing we need to wait for the resources to be ready
+  # wait: true # As we do not know what we are installing we need to wait for the resources to be ready
   sourceRef:
     kind: GitRepository
     name: cluster-provisioning-source-git
