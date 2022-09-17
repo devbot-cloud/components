@@ -1,0 +1,64 @@
+#------------------------------------------------
+# This Resource is the managment clusters workloads
+# This is the entrypoint for all the workloads that are applied to the management cluster
+# This workload is required to install rancher 
+# The gotk-clusters.yaml kustomization will wait for this workload to be ready before deploying downstream clusters
+#------------------------------------------------
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: ${CLUSTER_NAME}-workloads-git
+  namespace: ${CLUSTER_NAME}
+spec:
+  gitImplementation: go-git
+  interval: 1m0s
+  ref:
+    branch: ${MANAGEMENT_REPO_BRANCH:=main}
+  secretRef:
+    name: flux-system
+  timeout: 60s
+  url: ${MANAGEMENT_REPO_SSH} # <--- This value will be populated by the PostBuild Substitution
+  ignore: |
+    # Exclude Everything
+    /
+    # Include management cluster workloads
+    !/${CLUSTER_NAME}/workloads
+---
+#------------------------------------------------
+# This kustomize is responcible for deploying the management clusters workloads
+# This kustomize will recurse through the workloads directory of the management cluster
+# It will reconcile the /workloads folder of the management cluster
+# Creating the namespaces and kustomizations for the management cluster
+#------------------------------------------------
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: ${CLUSTER_NAME}-workloads
+  namespace: ${CLUSTER_NAME}
+spec:
+# -------------
+  dependsOn:
+    - name: flux-system-component  # <--- Wait for the core Flux-system to be deployed
+      namespace: flux-system
+    - name: cluster-security-component # <--- Wait for the security component to be deployed
+      namespace: flux-system
+# -------------
+  interval: 1m0s
+  path: ./${CLUSTER_NAME}/workloads/
+  prune: true 
+  wait: true # As we do not know what we are installing we need to wait for the resources to be ready
+  sourceRef:
+    kind: GitRepository
+    name: ${CLUSTER_NAME}-workloads-git
+    namespace: ${CLUSTER_NAME}
+  validation: server
+  timeout: 5m
+  # ---
+  # Post build
+  # Pull the Replacements from the ConfigMap cluster-env
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: workload-versions  # Require the workload-versions ConfigMap to be created
+      - kind: ConfigMap
+        name: cluster-env # Require the cluster-env ConfigMap to be created

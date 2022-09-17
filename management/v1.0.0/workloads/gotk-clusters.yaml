@@ -1,0 +1,76 @@
+#------------------------------------------------
+# Flux will use this kustomize to deploy the workload clusters
+# Flux will create a kustomization for each of the downstream clusters
+#------------------------------------------------
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: cluster-provisioning-component-git
+  namespace: ${CLUSTER_NAME}
+spec:
+  gitImplementation: go-git
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  timeout: 60s
+  url: ${MANAGEMENT_REPO_SSH}
+  ignore: |
+    # Exclude Everything
+    /
+    # Include the build directory of all downstream clusters
+    !/*/build
+    # exclude Management Cluster
+    /${CLUSTER_NAME}
+---
+# ------------------------------------------------
+# This kustomize is responcible for deploying the downstream clusters
+# It will recurse through the build directory of each downstream clusters directory
+# It will reconcile the /build folder of each downstream cluster
+# Creating the namespaces and kustomizations for each downstream cluster
+# This kustomize REQUIRES Rancher to be installed and running
+# All downstream clusters are deployed using the provisioning chart
+# ------------------------------------------------
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: cluster-provisioning-component
+  namespace: ${CLUSTER_NAME}   # <--- Create this kustomization in the management cluster namespace
+spec:
+# -------------
+# This Provisioning kustomization requires rancher to be installed and running in the management cluster
+# This Kustomize will wait for rancher to be ready before deploying the downstream clusters
+# -------------
+  dependsOn:
+    - name: ${CLUSTER_NAME}-workloads 
+      namespace: ${CLUSTER_NAME}
+    - name: rancher
+      namespace: ${CLUSTER_NAME}                     
+      # <--- Wait for the rancher kustomization to be ready
+      # NOTE: The rancher kustomization is defined in the management Clusters Workload
+      # There is a dependency on the management cluster workload kustomization to install rancher
+    - name: flux-system-component  # <--- Wait for the core Flux-system to be deployed
+      namespace: flux-system
+    - name: cluster-security-component # <--- Wait for the security component to be deployed
+      namespace: flux-system
+# -------------
+  interval: 1m0s
+  path: ./*/build/ # <--- Change this to the path of all the cluster folders
+  prune: true 
+  wait: true # As we do not know what we are installing we need to wait for the resources to be ready
+  sourceRef:
+    kind: GitRepository
+    name: cluster-provisioning-component-git
+    namespace: ${CLUSTER_NAME}
+  validation: server
+  timeout: 5m
+  # ---
+  # Post build
+  # Pull the Replacements from the ConfigMap cluster-env
+  # This contains the SSH Path and Cluster Name
+  # postBuild:
+  #   substituteFrom:
+  #     - kind: ConfigMap
+  #       name: cluster-env
+  # ---
