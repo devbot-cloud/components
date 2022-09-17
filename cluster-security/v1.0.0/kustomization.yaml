@@ -14,7 +14,7 @@ resources:
   
 # This is the PSA policy for the management cluster Kubernetes Version >= v1.25
 #------------------------------------------------
-  - pod-security-admission.yaml # <--- Sets the default policy to restricted and exempt kube-system and flux-system
+  # - pod-security-admission.yaml # <--- Sets the default policy to restricted and exempt kube-system and flux-system
   # Enforces at kubernetes version v1.25
 # Append all resources with the component name and version
 commonLabels:
