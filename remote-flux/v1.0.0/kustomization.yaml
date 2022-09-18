@@ -9,8 +9,8 @@ patches:
     target:
       version: kustomize.toolkit.fluxcd.io/v1beta2
       kind: Kustomization
-      name: defaukt
-      annotationSelector: "remote-flux/RemoteEnabled=true"
+      name: rancher-yaml
+      # annotationSelector: "remote-flux/RemoteEnabled=true"
 # Patch the HelmRelease to use the remote kubeconfig
   - patch: |
       - op: add
