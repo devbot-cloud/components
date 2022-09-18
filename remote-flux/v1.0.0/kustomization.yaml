@@ -9,8 +9,8 @@ patches:
           secretRef:
             name: ${CLUSTER_NAME}-kubeconfig
     target:
-      group: kustomize.toolkit.fluxcd.io
-      version: v1beta2
+      # group: kustomize.toolkit.fluxcd.io
+      # version: v1beta2
       kind: Kustomization
       name: rancher-yaml
       # annotationSelector: "remote-flux/RemoteEnabled=true"
