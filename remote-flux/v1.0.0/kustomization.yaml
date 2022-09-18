@@ -24,18 +24,17 @@ patches:
   # Patch the Kustomization for a local release
   - patch: |-
       - op: add
-        path: "/spec"
+        path: "/spec/patches"
         value:
-          patches:
-            - patch: |-
-                - op: add
-                  path: /spec/kubeConfig
-                  value:
-                    secretRef:
-                      name: ${CLUSTER_NAME}-kubeconfig
-              target:
-                kind: HelmRelease
-                annotationSelector: "remote-flux/RemoteEnabled=true"
+          - patch: |-
+              - op: add
+                path: /spec/kubeConfig
+                value:
+                  secretRef:
+                    name: ${CLUSTER_NAME}-kubeconfig
+            target:
+              kind: HelmRelease
+              annotationSelector: "remote-flux/RemoteEnabled=true"
     target:
       kind: Kustomization
       annotationSelector: "remote-flux/RemoteHelm=true"
