@@ -6,19 +6,21 @@ patches:
       - op: "add"
         path: "/spec/kubeConfig/secretRef"
         value: 
-          name: "${CLUSTER_NAME}-kubeconfig"
+          name: name
+          value: ${CLUSTER_NAME}-kubeconfig
     target:
       kind: Kustomization
       annotationSelector: "remote-flux/RemoteEnabled=true"
 # Patch the HelmRelease to use the remote kubeconfig
-  - patch: |
-      - op: "add"
-        path: "/spec/kubeConfig/secretRef"
-        value: 
-          name: "${CLUSTER_NAME}-kubeconfig"
-    target:
-      kind: HelmRelease
-      annotationSelector: "remote-flux/RemoteEnabled=true"
+  # - patch: |
+  #     - op: "add"
+  #       path: "/spec/kubeConfig/secretRef"
+  #       value: 
+  #         name: name
+  #         value: ${CLUSTER_NAME}-kubeconfig
+  #   target:
+  #     kind: HelmRelease
+  #     annotationSelector: "remote-flux/RemoteEnabled=true"
   # Patch the Kustomization for a local release
   # - patch: |-
   #     - op: add
