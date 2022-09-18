@@ -1,5 +1,5 @@
 [
   {"op": "replace",
    "path": "/metadata/name",
-   "value": "testtttt"},
+   "value": "testtttt"}
 ]
