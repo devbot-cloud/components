@@ -2,15 +2,11 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 patches:
   # Patch the Kustomization to use the remote kubeconfig
-  - patch: |
-      - op: replace
-        path: /metadata/name
-        value: "test"
+  - path: ./remote-patch.yaml
     target:
       version: kustomize.toolkit.fluxcd.io/v1beta2
       kind: Kustomization
-      name: rancher-yaml
-      # annotationSelector: "remote-flux/RemoteEnabled=true"
+      annotationSelector: "remote-flux/RemoteEnabled=true"
 # Patch the HelmRelease to use the remote kubeconfig
   - patch: |
       - op: add
