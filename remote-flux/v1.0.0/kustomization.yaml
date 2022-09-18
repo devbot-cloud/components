@@ -31,9 +31,9 @@ patches:
               kubeConfig:
                 secretRef:
                   name: ${CLUSTER_NAME}-kubeconfig
-          target:
-            kind: helm.toolkit.fluxcd.io/HelmRelease
-            annotationSelector: "remote-flux/RemoteEnabled=true"
+            target:
+              kind: helm.toolkit.fluxcd.io/HelmRelease
+              annotationSelector: "remote-flux/RemoteEnabled=true"
 
 # Append all resources with the component name and version
 commonAnnotations:
