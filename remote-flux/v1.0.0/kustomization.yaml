@@ -23,7 +23,7 @@ patches:
   - patch: |-
       - op: add
         path: /spec/patches/0/patch
-        value: {[op: add, path: /spec/kubeConfig/secretRef/name, value: ${CLUSTER_NAME}-kubeconfig]}
+        value: {[op: add, path: /spec/kubeConfig/secretRef/name, value: kubeconfig]}
       - op: add
         path: /spec/patches/0/target
         value: {[version: helm.toolkit.fluxcd.io/v2beta1, kind: HelmRelease, annotationSelector: remote-flux/RemoteEnabled=true]}
@@ -31,7 +31,7 @@ patches:
       version: kustomize.toolkit.fluxcd.io/v1beta2
       kind: Kustomization
       annotationSelector: "remote-flux/RemoteHelm=true"
-      
+
 # Append all resources with the component name and version
 commonAnnotations:
   remote-flux/Patched: "true"
