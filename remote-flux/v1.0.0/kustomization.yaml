@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+patches:
+  # Patch the Kustomization to use the remote kubeconfig
+  - path: ./remote-patch.yaml
+    target:
+      version: kustomize.toolkit.fluxcd.io/v1beta2
+      kind: Kustomization
+      annotationSelector: "remote-flux/RemoteEnabled=true"
+# Patch the HelmRelease to use the remote kubeconfig
+  - path: ./remote-patch.yaml
+    target:
+      version: helm.toolkit.fluxcd.io/v2beta1
+      kind: HelmRelease
+      annotationSelector: "remote-flux/RemoteEnabled=true"
+
+# Append all resources with the component name and version
+commonAnnotations:
+  remote-flux/Patched: "true"
+  remote-flux/ComponentVersion: v1.0.0
