@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 # Create the namespace for the management cluster
   - namespaces.yaml
+  - configmap.yaml
 # Install Cluster-sync components
   - gotk-clusters.yaml
   - gotk-management.yaml

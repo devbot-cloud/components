@@ -1,0 +1,16 @@
+# this is the management clusters .env file configmap
+#------------------------------------------------
+#NOTE: this is hacky and should be replaced with a better solution
+# we need to copy the cluster-env from the flux-system namespace to the clusters namespace 
+# so that the workloads folder can access it. i cant think of a better way to do this
+#------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-env
+  namespace: ${CLUSTER_NAME} 
+data:
+  CLUSTER_NAME: ${CLUSTER_NAME}
+  CLUSTER_FQDN: ${CLUSTER_FQDN}
+  MANAGEMENT_REPO_SSH: ${MANAGEMENT_REPO_SSH}
+  MANAGEMENT_REPO_BRANCH: ${MANAGEMENT_REPO_BRANCH}
