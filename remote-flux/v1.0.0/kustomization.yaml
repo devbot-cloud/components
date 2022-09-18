@@ -4,7 +4,7 @@ patches:
   # Patch the Kustomization to use the remote kubeconfig
   - patch: |
       - op: add
-        path: "/spec/kubeConfig/secretRef"
+        path: "/spec/kubeConfig/secretRef/name"
         value: 
           name: kubeconfig
     target:
