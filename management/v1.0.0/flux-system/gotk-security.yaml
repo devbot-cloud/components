@@ -20,7 +20,7 @@ spec:
     # Exclude Everything
     /*
     # include cluster-securtiy component
-    !/cluster-securtiy/
+    !/cluster-security/
 ---
 #------------------------------------------------
 # This is the kustomize for the Clusters Security component
