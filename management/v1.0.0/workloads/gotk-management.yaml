@@ -4,7 +4,7 @@
 # This workload is required to install rancher 
 # The gotk-clusters.yaml kustomization will wait for this workload to be ready before deploying downstream clusters
 #------------------------------------------------
-apiVersion: source.toolkit.fluxcd.io/v1beta1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: GitRepository
 metadata:
   name: ${CLUSTER_NAME}-workloads-git
@@ -16,7 +16,7 @@ spec:
     branch: ${MANAGEMENT_REPO_BRANCH:=main}
   secretRef:
     name: flux-system
-  timeout: 60s
+  timeout: 10s
   url: ${MANAGEMENT_REPO_SSH} # <--- This value will be populated by the PostBuild Substitution
   ignore: |
     # Exclude Everything
@@ -53,6 +53,7 @@ spec:
     namespace: flux-system
   validation: server
   timeout: 5m
+  targetNamespace: ${CLUSTER_NAME} # <--- This namespace overrides all namespaces is the kustomization
   # ---
   # Post build
   # Pull the Replacements from the ConfigMap cluster-env

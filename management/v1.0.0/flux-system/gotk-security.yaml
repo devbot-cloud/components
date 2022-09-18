@@ -2,7 +2,7 @@
 # The Cluster-Security component is responsible for deploying the Clusters PSP and RBAC security controls
 # The Cluster-Security component will deploy policy engines in the future such as OPA and Kyverno
 #------------------------------------------------
-apiVersion: source.toolkit.fluxcd.io/v1beta1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: GitRepository
 metadata:
   name: cluster-securtiy-component-git
@@ -14,15 +14,20 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  timeout: 60s
+  timeout: 10s
   url: ssh://git@github.com/devbot-cloud/components.git # <--- Change this to the repo your currently in
+  ignore: |
+    # Exclude Everything
+    /*
+    # include cluster-securtiy component
+    !/cluster-securtiy/
 ---
 #------------------------------------------------
 # This is the kustomize for the Clusters Security component
 # The Security component contain the flux kustomizations
 # This contains the psp and rbac for the management cluster
 #------------------------------------------------
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
   name: cluster-security-component

@@ -3,7 +3,7 @@
 # The workloads component contain the flux kustomizations 
 # For the Bootstraping of the management cluster
 #------------------------------------------------
-apiVersion: source.toolkit.fluxcd.io/v1beta1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: GitRepository
 metadata:
   name: cluster-workload-component-git
@@ -15,7 +15,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  timeout: 60s
+  timeout: 10s
   url: ssh://git@github.com/devbot-cloud/components.git # <--- Change this to the repo your currently in
   ignore: |
     # Exclude Everything
@@ -27,7 +27,7 @@ spec:
 # This is the kustomize for the cluster-workload-component
 # This will reconcile the management cluster workloads
 #------------------------------------------------
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
   name: cluster-workload-component
@@ -46,6 +46,7 @@ spec:
     name: cluster-workload-component-git
     namespace: flux-system
   validation: server
+  suspend: true # <--- Pause the reconciliation for testing
   timeout: 5m
   # ---
   # Post build

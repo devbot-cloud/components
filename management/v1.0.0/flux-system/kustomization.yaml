@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - gotk-sources.yaml
+  # - gotk-sources.yaml # <--- Uncomment this to Create the flux-sources namespace 
   - gotk-components.yaml
   - gotk-sync.yaml
   - gotk-security.yaml 
@@ -9,5 +9,5 @@ resources:
 
 # Append all resources with the component name and version
 commonLabels:
-  lootbot.cloud/ComponentName: "management"
+  lootbot.cloud/ComponentName: "flux-system"
   lootbot.cloud/ComponentVersion: "v1.0.0"

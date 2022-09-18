@@ -2,7 +2,7 @@
 # Pull the source for the cluster-provisioning component 
 # Store it in the flux-system namespace for all clusters
 #------------------------------------------------
-apiVersion: source.toolkit.fluxcd.io/v1beta1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: GitRepository
 metadata:
   name: cluster-provisioning-component-git
@@ -14,7 +14,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  timeout: 60s
+  timeout: 10s
   url: ssh://git@github.com/devbot-cloud/components.git
   ignore: |
     # Exclude Everything
@@ -26,7 +26,7 @@ spec:
 # Flux will use this kustomize to deploy the workload clusters
 # Flux will create a kustomization for each of the downstream clusters
 #------------------------------------------------
-apiVersion: source.toolkit.fluxcd.io/v1beta1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: GitRepository
 metadata:
   name: cluster-provisioning-source-git
@@ -38,7 +38,7 @@ spec:
     branch: main
   secretRef:
     name: flux-system
-  timeout: 60s
+  timeout: 10s
   url: ${MANAGEMENT_REPO_SSH}
   ignore: |
     # Exclude Everything
@@ -56,7 +56,7 @@ spec:
 # This kustomize REQUIRES Rancher to be installed and running
 # All downstream clusters are deployed using the provisioning chart
 # ------------------------------------------------
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
   name: cluster-provisioning-component

@@ -9,5 +9,5 @@ resources:
 
 # Append all resources with the component name and version
 commonLabels:
-  lootbot.cloud/ComponentName: "management"
+  lootbot.cloud/ComponentName: "workloads"
   lootbot.cloud/ComponentVersion: "v1.0.0"
