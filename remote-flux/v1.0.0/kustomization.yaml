@@ -2,21 +2,18 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 patches:
   # Patch the Kustomization to use the remote kubeconfig
-  - patch: |
-      - op: add
-        path: /spec/kubeConfig/secretRef
-        value: {"name":"kubeconfig"}
+  - path: remote-patch.yaml
     target:
       kind: Kustomization
       annotationSelector: "remote-flux/RemoteEnabled=true"
 # Patch the HelmRelease to use the remote kubeconfig
-  - patch: |
-      - op: add
-        path: /spec/kubeConfig/secretRef
-        value: {"name":"kubeconfig"}
-    target:
-      kind: HelmRelease
-      annotationSelector: "remote-flux/RemoteEnabled=true"
+  # - patch: |
+  #     - op: add
+  #       path: /spec/kubeConfig/secretRef
+  #       value: {"name":"kubeconfig"}
+  #   target:
+  #     kind: HelmRelease
+  #     annotationSelector: "remote-flux/RemoteEnabled=true"
   # Patch the Kustomization for a local release
   - patch: |-
       - op: add
