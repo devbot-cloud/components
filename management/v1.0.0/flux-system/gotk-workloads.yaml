@@ -46,7 +46,7 @@ spec:
     name: cluster-workload-component-git
     namespace: flux-system
   validation: server
-  suspend: true # <--- Pause the reconciliation for testing
+  # suspend: true # <--- Pause the reconciliation for testing
   timeout: 5m
   # ---
   # Post build
