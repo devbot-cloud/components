@@ -3,7 +3,7 @@ kind: Component
 patches:
   # Patch the Kustomization to use the remote kubeconfig
   - patch: |
-      - op: add
+      - op: replace
         path: /metadata/name
         value: "test"
     target:
