@@ -1,6 +1,0 @@
-[
-  {"op": "add",
-   "path": "/spec/kubeConfig/secretRef",
-   "value": {"name": "testtttt"}
-   }
-]
