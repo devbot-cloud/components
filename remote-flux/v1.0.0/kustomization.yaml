@@ -4,6 +4,8 @@ patches:
   # Patch the Kustomization to use the remote kubeconfig
   - path: remote-patch.yaml
     target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1beta2
       kind: Kustomization
       name: rancher-yaml
       # annotationSelector: "remote-flux/RemoteEnabled=true"
