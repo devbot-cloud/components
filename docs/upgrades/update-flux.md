@@ -43,7 +43,7 @@ components
 One you locate `gotk-components.yaml` we'll patch it by using the following command
 
 ```bash
-flux install --export > components/management/flux-system/gotk-components.yaml
+flux install --components-extra=image-reflector-controller,image-automation-controller --export > management/flux-system/gotk-components.yaml
 ```
 
 After this file is updated, you can check to be sure it updated the correct file by running
