@@ -1,32 +1,3 @@
-#------------------------------------------------
-# Flux sync configuration
-# the git repository points to itself 
-# This component will allow fluxcd to reconcile itself
-#------------------------------------------------
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: GitRepository
-metadata:
-  name: flux-system-component-git
-  namespace: flux-system
-spec:
-  gitImplementation: go-git
-  interval: 1m0s
-  ref:
-    branch: main
-  secretRef:
-    name: flux-system
-  timeout: 10s
-  url: ssh://git@github.com/devbot-cloud/components.git # <--- Change this to the repo your currently in
-  ignore: |
-    # Exclude Everything
-    /*
-    # include management component
-    !/management/
----
-#------------------------------------------------
-# This kustomization will alow flux to reconcile itself 
-# Changing the path in the following kustomization will allow for upgrading of the management components
-#------------------------------------------------
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
@@ -35,15 +6,13 @@ metadata:
 spec:
   sourceRef:
     kind: GitRepository
-    name: flux-system-component-git
+    name: components-production
     namespace: flux-system
-  path: ./management/v1.0.0/flux-system # <--- Change this to the path to the flux-system component
+  path: ./management/flux-system
   # --- 
-  # Disable pruning to prevent flux from deleting itself?
-  prune: false 
+  prune: true
   # ---
-  interval: 1m0s
-  validation: server
+  interval: 10m0s
   timeout: 5m
   healthChecks: # <--- Perform health checks on all flux-system components
   # Source Controller
@@ -60,11 +29,4 @@ spec:
   - apiVersion: apps/v1
     kind: Deployment
     name: helm-controller
-    namespace: flux-system 
-  # ---
-  # Post build
-  # ---
-  postBuild:
-    substituteFrom:
-      - kind: ConfigMap
-        name: cluster-env
+    namespace: flux-system

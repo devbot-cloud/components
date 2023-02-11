@@ -1,14 +1,16 @@
-# ------------------------------------------------
-# Create the namespace for flux sources
-# This is the namespace flux will use to store all sources
-# ------------------------------------------------
-apiVersion: v1
-kind: Namespace
+#------------------------------------------------
+# Components PRODUCTION sync configuration
+#------------------------------------------------
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
 metadata:
-  labels:
-    app.kubernetes.io/instance: flux-system
-    app.kubernetes.io/part-of: flux
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/audit: restricted
-    pod-security.kubernetes.io/warn: restricted
-  name: flux-sources
+  name: components-production
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  url: github.com/devbot-cloud/components.git
+---

@@ -1,13 +1,61 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  # - gotk-sources.yaml # <--- Uncomment this to Create the flux-sources namespace 
   - gotk-components.yaml
   - gotk-sync.yaml
-  - gotk-security.yaml 
-  - gotk-workloads.yaml
+  - gotk-sync.yaml
 
-# Append all resources with the component name and version
-commonLabels:
-  lootbot.cloud/ComponentName: "flux-system"
-  lootbot.cloud/ComponentVersion: "v1.0.0"
+
+# Patches to the Flux components
+patches:
+  - patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --concurrent=10
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --kube-api-qps=500
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --kube-api-burst=1000 
+    target:
+      kind: Deployment
+      name: "(kustomize-controller|helm-controller|source-controller)"
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: all
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                resources:
+                  limits:
+                    cpu: 2000m
+                    memory: 2Gi      
+    target:
+      kind: Deployment
+      name: "(kustomize-controller|helm-controller|source-controller)"
+
+# Using HTTP/S proxy for egress traffic
+# See /docs/usage/proxy.md for more information
+# - patch: |
+#     apiVersion: apps/v1
+#     kind: Deployment
+#     metadata:
+#       name: all
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#             - name: manager
+#               env:
+#                 - name: "HTTPS_PROXY"
+#                   value: "http://proxy.example.com:3129"
+#                 - name: "NO_PROXY"
+#                   value: ".cluster.local.,.cluster.local,.svc"      
+#   target:
+#     kind: Deployment
+#     labelSelector: app.kubernetes.io/part-of=flux
