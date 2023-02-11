@@ -59,3 +59,15 @@ patches:
 #   target:
 #     kind: Deployment
 #     labelSelector: app.kubernetes.io/part-of=flux
+
+# Scaling controllers to 3 replicas
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: all
+      spec:
+        replicas: 3
+    target:
+      kind: Deployment
+      name: "(kustomize-controller|helm-controller|source-controller)"
