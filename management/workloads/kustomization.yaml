@@ -5,10 +5,5 @@ resources:
   - namespaces.yaml
   - configmap.yaml
 # Install Cluster-sync components
-  - gotk-clusters.yaml
-  - gotk-management.yaml
-
-# Append all resources with the component name and version
-commonLabels:
-  lootbot.cloud/ComponentName: "workloads"
-  lootbot.cloud/ComponentVersion: "v1.0.0"
+  - build.yaml
+  - workloads.yaml

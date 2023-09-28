@@ -1,15 +1,16 @@
 #------------------------------------------------
-# Components PRODUCTION sync configuration
+# Components sync configuration
 #------------------------------------------------
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: components-production
+  name: gotk-sources
   namespace: flux-system
 spec:
-  interval: 1m0s
+  interval: 10m0s
   ref:
-    branch: main
+    semver: 1.0.x
+    # branch: main
   # secretRef:
   #   name: flux-system
   url: https://github.com/devbot-cloud/components.git

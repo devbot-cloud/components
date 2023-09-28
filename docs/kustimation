@@ -1,0 +1,14 @@
+https://fluxcd.io/flux/components/kustomize/kustomizations/#writing-a-kustomization-spec:~:text=%24%20go%20install%20github.com/drone/envsubst/cmd/envsubst
+
+
+kubectl annotate --field-manager=flux-client-side-apply --overwrite kustomization/<kustomization-name> reconcile.fluxcd.io/requestedAt="$(date +%s)"
+
+kubectl patch kustomization <kustomization-name> --field-manager=flux-client-side-apply -p '{\"spec\": {\"suspend\" : true }}'
+
+kubectl patch kustomization <kustomization-name> --field-manager=flux-client-side-apply -p '{\"spec\" : {\"suspend\" : false }}'
+
+
+https://fluxcd.io/flux/components/source/gitrepositories/#semver-example
+
+
+kubectl annotate --field-manager=flux-client-side-apply --overwrite gitrepository/<repository-name> reconcile.fluxcd.io/requestedAt="$(date +%s)"

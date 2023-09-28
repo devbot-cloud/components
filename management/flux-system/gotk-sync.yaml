@@ -1,18 +1,18 @@
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-system-component
+  name: gotk-sync
   namespace: flux-system
 spec:
   sourceRef:
     kind: GitRepository
-    name: components-production
+    name: gotk-sources
     namespace: flux-system
   path: ./management/flux-system
   # --- 
   prune: true
   # ---
-  interval: 10m0s
+  interval: 30m0s # Potential change to 60m0s
   timeout: 5m
   healthChecks: # <--- Perform health checks on all flux-system components
   # Source Controller

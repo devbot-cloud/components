@@ -1,0 +1,71 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - gotk-components.yaml
+  - gotk-sources.yaml
+  - gotk-sync.yaml
+
+
+# Patches to the Flux components
+patches:
+# Add a resource limit to controllers
+  - patch: |
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --kube-api-qps=50
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --kube-api-burst=100 
+    target:
+      kind: Deployment
+      name: "(kustomize-controller|helm-controller|source-controller)"
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: all
+      spec:
+        template:
+          spec:
+            containers:
+              - name: manager
+                resources:
+                  limits:
+                    cpu: 2000m
+                    memory: 2Gi      
+    target:
+      kind: Deployment
+      name: "(kustomize-controller|helm-controller|source-controller)"
+
+# Using HTTP/S proxy for egress traffic
+# See /docs/usage/proxy.md for more information
+- patch: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: all
+    spec:
+      template:
+        spec:
+          containers:
+            - name: manager
+              env:
+                - name: "HTTPS_PROXY"
+                  value: "http://proxy.example.com:3129"
+                - name: "NO_PROXY"
+                  value: ".cluster.local.,.cluster.local,.svc"      
+  target:
+    kind: Deployment
+    labelSelector: app.kubernetes.io/part-of=flux
+
+# Scaling controllers to 3 replicas
+  - patch: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: all
+      spec:
+        replicas: 3
+    target:
+      kind: Deployment
+      name: "(kustomize-controller|helm-controller)"

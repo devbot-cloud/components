@@ -25,28 +25,23 @@ metadata:
 # allowing the component to reconcile itself and apply the resources per ds cluster.
 # -------
 #NOTE: this is assuming the source for this component is stored in the flux-system namespace
-apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: ${CLUSTER_NAME}-build-component
+  name: build
   namespace: ${CLUSTER_NAME}
 spec:
   dependsOn:
   # Build Component Depends on the availability of Rancher and external secrets
-    - name: flux-system-component  # <--- Wait for the core Flux-system to be deployed
-      namespace: flux-system
-    - name: cluster-security-component # <--- Wait for the security component to be deployed
-      namespace: flux-system
-  interval: 1m0s
-  path: ./components/downstream/v1.0.0
+    # - name: gotk-sync  # <--- Wait for the core Flux-system to be deployed
+      # namespace: flux-system
+  interval: 10m0s
+  path: ./components/downstream
   prune: true
   sourceRef:
     kind: GitRepository
-    name: cluster-provisioning-component-git
+    name: build
     namespace: flux-system
-  validation: client
-  timeout: 1m0s
-  timeoutSeconds: 30
   # ---
   # Post build
   # Pull the Replacements from the ConfigMap cluster-env
